@@ -1,0 +1,574 @@
+<title>사주풀이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Dodum&display=swap">
+<style>
+  @font-face{
+    font-family:'CustomDisplay';
+    src:url('fonts/custom-display.ttf') format('truetype');
+    font-display:swap;
+  }
+  :root{
+    --bg:#EFE6CE;
+    --surface:#FBF6E8;
+    --surface-2:#F3ECDA;
+    --ink:#2A2118;
+    --ink-soft:#6B5D4C;
+    --red:#A63B2E;
+    --blue:#25507A;
+    --gold:#B8892B;
+    --line: rgba(42,33,24,.20);
+    --line-strong: rgba(42,33,24,.38);
+    --shadow: 0 18px 40px rgba(42,33,24,.16);
+    --font-display:'CustomDisplay', 'Nanum Myeongjo', 'Noto Serif KR', serif;
+    --font-body:'Gowun Dodum', 'Noto Sans KR', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#161209;
+      --surface:#221C13;
+      --surface-2:#2A2317;
+      --ink:#EEE4CC;
+      --ink-soft:#B8AA8C;
+      --red:#D06B5C;
+      --blue:#7CA3D1;
+      --gold:#D8B463;
+      --line: rgba(238,228,204,.16);
+      --line-strong: rgba(238,228,204,.30);
+      --shadow: 0 18px 40px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#161209;
+    --surface:#221C13;
+    --surface-2:#2A2317;
+    --ink:#EEE4CC;
+    --ink-soft:#B8AA8C;
+    --red:#D06B5C;
+    --blue:#7CA3D1;
+    --gold:#D8B463;
+    --line: rgba(238,228,204,.16);
+    --line-strong: rgba(238,228,204,.30);
+    --shadow: 0 18px 40px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:
+      radial-gradient(1200px 800px at 15% -10%, color-mix(in srgb, var(--red) 6%, transparent), transparent 60%),
+      radial-gradient(1200px 800px at 110% 110%, color-mix(in srgb, var(--blue) 8%, transparent), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100%;
+    padding-inline:16px;
+    padding-block: max(28px, env(safe-area-inset-top,0px)) max(28px, env(safe-area-inset-bottom,0px));
+    display:flex;
+    justify-content:center;
+  }
+  .stage{ width:100%; max-width:460px; }
+
+  .emblem{ width:34px; height:34px; margin:0 auto 10px; display:block; }
+  .brand{ text-align:center; margin-bottom:22px; }
+  .brand h1{
+    font-family:var(--font-display); font-weight:800; font-size:1.7rem; margin:0 0 4px;
+    letter-spacing:.02em;
+  }
+  .brand p{ margin:0; color:var(--ink-soft); font-size:.85rem; letter-spacing:.03em; }
+
+  .card{
+    position:relative;
+    background:var(--surface);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:30px 26px 26px;
+    border:1px solid var(--line);
+  }
+  .card::before{
+    content:"";
+    position:absolute; inset:9px;
+    border:1px solid var(--line);
+    border-radius:11px;
+    pointer-events:none;
+  }
+  .corner{ position:absolute; width:16px; height:16px; border:2px solid var(--gold); opacity:.85; }
+  .corner.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; border-radius:6px 0 0 0; }
+  .corner.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; border-radius:0 6px 0 0; }
+  .corner.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; border-radius:0 0 0 6px; }
+  .corner.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; border-radius:0 0 6px 0; }
+
+  .section-title{
+    font-family:var(--font-display); font-weight:700; font-size:1rem;
+    display:flex; align-items:baseline; gap:8px; margin:0 0 14px;
+  }
+  .section-title .mark{ color:var(--red); font-size:1.1em; }
+
+  fieldset{ border:none; margin:0 0 22px; padding:0; }
+  legend{
+    font-family:var(--font-display); font-weight:700; font-size:.95rem; margin-bottom:10px; padding:0;
+    display:flex; align-items:center; gap:6px;
+  }
+  legend .hanja{ color:var(--ink-soft); font-weight:400; font-size:.8em; }
+
+  .gender-row{ display:flex; gap:10px; }
+  .gender-btn{
+    flex:1; padding:12px 0; text-align:center; border-radius:10px;
+    border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink);
+    font-family:var(--font-body); font-size:.95rem; cursor:pointer; transition:.15s;
+  }
+  .gender-btn .hanja{ display:block; font-family:var(--font-display); font-size:1.1rem; color:var(--ink-soft); margin-bottom:2px; }
+  .gender-btn[aria-pressed="true"]{ border-color:var(--red); background:color-mix(in srgb, var(--red) 12%, var(--surface)); }
+  .gender-btn[aria-pressed="true"] .hanja{ color:var(--red); }
+  .gender-btn:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  input[type="date"]{
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--line-strong);
+    background:var(--surface-2); color:var(--ink); font-family:var(--font-body); font-size:.95rem;
+  }
+  input[type="date"]:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  .wheel-wrap{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .wheel{ position:relative; width:220px; height:220px; }
+  .wheel-ring{
+    position:absolute; inset:0; border-radius:50%;
+    border:1px dashed var(--line-strong);
+  }
+  .wheel-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; pointer-events:none;
+  }
+  .wheel-center .hanja{ font-family:var(--font-display); font-size:1.6rem; color:var(--red); line-height:1; }
+  .wheel-center .name{ font-size:.8rem; margin-top:4px; }
+  .wheel-center .range{ font-size:.68rem; color:var(--ink-soft); margin-top:2px; }
+  .hour-btn{
+    position:absolute; top:50%; left:50%; width:34px; height:34px; margin:-17px;
+    border-radius:50%; border:1px solid var(--line-strong); background:var(--surface-2);
+    font-family:var(--font-display); font-size:.9rem; color:var(--ink-soft); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:.15s;
+    transform: rotate(calc(var(--i) * 30deg)) translate(0, -92px) rotate(calc(var(--i) * -30deg));
+  }
+  .hour-btn[aria-pressed="true"]{ background:var(--red); border-color:var(--red); color:var(--surface); }
+  .hour-btn:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+  .unknown-btn{
+    border:1px solid var(--line-strong); background:transparent; color:var(--ink-soft);
+    font-family:var(--font-body); font-size:.82rem; padding:7px 14px; border-radius:999px; cursor:pointer;
+  }
+  .unknown-btn[aria-pressed="true"]{ border-color:var(--blue); color:var(--blue); }
+
+  .consent-box{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:20px;
+  }
+  .consent-box h3{ font-family:var(--font-display); font-size:.9rem; margin:0 0 6px; }
+  .consent-box p{ font-size:.78rem; color:var(--ink-soft); line-height:1.55; margin:0 0 12px; }
+  .consent-row{ display:flex; align-items:center; gap:12px; cursor:pointer; position:relative; width:fit-content; }
+  .consent-checkbox{ position:absolute; opacity:0; width:34px; height:34px; margin:0; cursor:pointer; }
+  .seal{
+    width:34px; height:34px; flex:0 0 auto; border-radius:7px; border:2px solid var(--red); color:var(--red);
+    font-family:var(--font-display); font-weight:800; display:flex; align-items:center; justify-content:center;
+    opacity:0; transform:scale(1.6) rotate(-16deg); transition:opacity .2s, transform .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .consent-checkbox:checked ~ .seal{ opacity:1; transform:scale(1) rotate(-7deg); background:color-mix(in srgb, var(--red) 10%, transparent); }
+  .consent-checkbox:focus-visible ~ .seal{ outline:2px solid var(--blue); outline-offset:2px; }
+  .consent-text{ font-size:.88rem; }
+
+  .submit-btn{
+    width:100%; padding:15px; border-radius:12px; border:none; cursor:pointer;
+    font-family:var(--font-display); font-weight:700; font-size:1.02rem; letter-spacing:.03em;
+    background:var(--red); color:#FBF6E8; transition:.15s;
+  }
+  .submit-btn:disabled{ background:var(--surface-2); color:var(--ink-soft); cursor:not-allowed; border:1px solid var(--line); }
+  .submit-btn:not(:disabled):hover{ filter:brightness(1.06); }
+  .submit-btn:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  .loading{ display:flex; flex-direction:column; align-items:center; gap:16px; padding:40px 0 30px; }
+  .taegeuk{ width:52px; height:52px; animation:spin 1.1s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+  .loading p{ font-size:.88rem; color:var(--ink-soft); }
+
+  .summary-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:22px; }
+  .stat-tile{ background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center; }
+  .stat-tile .label{ font-size:.7rem; color:var(--ink-soft); letter-spacing:.05em; }
+  .stat-tile .value{ font-family:var(--font-display); font-weight:700; font-size:1.05rem; margin-top:3px; }
+  .stat-tile .sub{ font-size:.72rem; color:var(--ink-soft); margin-top:1px; }
+
+  .overall{ text-align:center; margin-bottom:26px; }
+  .grade-badge{
+    display:inline-block; font-family:var(--font-display); font-weight:800; font-size:1.3rem;
+    padding:6px 20px; border-radius:999px; border:2px solid var(--gold); color:var(--gold); margin-bottom:10px;
+  }
+  .score-bar{ height:8px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line); }
+  .score-bar > div{ height:100%; background:linear-gradient(90deg, var(--gold), var(--red)); border-radius:999px; transition:width .8s ease; }
+  .score-label{ font-size:.75rem; color:var(--ink-soft); margin-top:6px; font-variant-numeric:tabular-nums; }
+
+  .cat-block{ margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid var(--line); }
+  .cat-block:last-of-type{ border-bottom:none; }
+  .cat-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .cat-head .name{ font-family:var(--font-display); font-weight:700; font-size:.98rem; display:flex; align-items:center; gap:6px; }
+  .cat-head .name .hanja{ color:var(--ink-soft); font-weight:400; font-size:.82em; }
+  .tag{ font-size:.72rem; padding:3px 10px; border-radius:999px; border:1px solid; }
+  .tag.대길{ color:var(--gold); border-color:var(--gold); }
+  .tag.길{ color:var(--blue); border-color:var(--blue); }
+  .tag.평{ color:var(--ink-soft); border-color:var(--line-strong); }
+  .tag.주의{ color:var(--red); border-color:var(--red); }
+  .cat-block .score-bar{ height:5px; margin-bottom:10px; }
+  .cat-block p{ margin:0; font-size:.9rem; line-height:1.6; }
+
+  .lucky-row{ display:flex; gap:10px; margin:22px 0 26px; }
+  .lucky-tile{ flex:1; text-align:center; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:12px 6px; }
+  .lucky-tile .swatch{ width:20px; height:20px; border-radius:50%; margin:0 auto 6px; border:1px solid var(--line-strong); }
+  .lucky-tile .label{ font-size:.68rem; color:var(--ink-soft); }
+  .lucky-tile .value{ font-size:.86rem; margin-top:2px; }
+
+  .reset-btn{
+    width:100%; padding:13px; border-radius:12px; border:1px solid var(--line-strong); background:transparent;
+    color:var(--ink); font-family:var(--font-body); font-size:.92rem; cursor:pointer;
+  }
+  .reset-btn:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+  .disclaimer{ text-align:center; font-size:.72rem; color:var(--ink-soft); margin-top:18px; line-height:1.5; }
+
+  [hidden]{ display:none !important; }
+  @media (prefers-reduced-motion: reduce){
+    .taegeuk{ animation:none; }
+    .score-bar > div{ transition:none; }
+  }
+</style>
+
+<div class="stage">
+  <div class="brand">
+    <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="var(--gold)" stroke-width="2"/>
+      <path d="M50,4 A46,46 0 0 1 50,96 A23,23 0 0 1 50,50 A23,23 0 0 0 50,4 Z" fill="var(--red)"/>
+      <path d="M50,96 A46,46 0 0 1 50,4 A23,23 0 0 1 50,50 A23,23 0 0 0 50,96 Z" fill="var(--blue)"/>
+      <circle cx="50" cy="27" r="7.5" fill="var(--blue)"/>
+      <circle cx="50" cy="73" r="7.5" fill="var(--red)"/>
+    </svg>
+    <h1>사주풀이</h1>
+    <p>생년월일과 태어난 시각으로 보는 오늘의 사주</p>
+  </div>
+
+  <div class="card" id="card">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+
+    <form id="formView">
+      <fieldset>
+        <legend>성별</legend>
+        <div class="gender-row" role="radiogroup" aria-label="성별">
+          <button type="button" class="gender-btn" id="genderMale" aria-pressed="false">
+            <span class="hanja">男</span>남
+          </button>
+          <button type="button" class="gender-btn" id="genderFemale" aria-pressed="false">
+            <span class="hanja">女</span>여
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend for="birthdate">생년월일</legend>
+        <input type="date" id="birthdate" required>
+      </fieldset>
+
+      <fieldset>
+        <legend>태어난 시각 <span class="hanja">(십이지시)</span></legend>
+        <div class="wheel-wrap">
+          <div class="wheel" id="hourWheel">
+            <div class="wheel-ring"></div>
+            <div class="wheel-center" id="wheelCenter">
+              <span class="hanja">?</span>
+              <span class="name">시간을 선택해주세요</span>
+              <span class="range"></span>
+            </div>
+          </div>
+          <button type="button" class="unknown-btn" id="unknownHour" aria-pressed="false">모름 (연월일만으로 풀이)</button>
+        </div>
+      </fieldset>
+
+      <div class="consent-box">
+        <h3>개인정보 수집·이용 동의</h3>
+        <p>입력하신 성별, 생년월일, 태어난 시각 정보는 이 브라우저 안에서 운세 계산에만 사용되며, 외부 서버로 전송되거나 저장되지 않습니다.</p>
+        <label class="consent-row">
+          <input type="checkbox" id="consent" class="consent-checkbox">
+          <span class="seal" aria-hidden="true">認</span>
+          <span class="consent-text">위 내용에 동의합니다</span>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>나의 사주 보기</button>
+    </form>
+
+    <div id="loadingView" hidden>
+      <div class="loading">
+        <svg class="taegeuk" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="var(--gold)" stroke-width="2"/>
+          <path d="M50,4 A46,46 0 0 1 50,96 A23,23 0 0 1 50,50 A23,23 0 0 0 50,4 Z" fill="var(--red)"/>
+          <path d="M50,96 A46,46 0 0 1 50,4 A23,23 0 0 1 50,50 A23,23 0 0 0 50,96 Z" fill="var(--blue)"/>
+          <circle cx="50" cy="27" r="7.5" fill="var(--blue)"/>
+          <circle cx="50" cy="73" r="7.5" fill="var(--red)"/>
+        </svg>
+        <p>사주를 풀이하는 중...</p>
+      </div>
+    </div>
+
+    <div id="resultView" hidden>
+      <div class="summary-grid" id="summaryGrid"></div>
+
+      <div class="overall">
+        <div class="grade-badge" id="overallGrade">-</div>
+        <div class="score-bar"><div id="overallBar" style="width:0%"></div></div>
+        <div class="score-label" id="overallLabel"></div>
+      </div>
+
+      <div id="categoryList"></div>
+
+      <div class="lucky-row" id="luckyRow"></div>
+
+      <button type="button" class="reset-btn" id="resetBtn">다시 풀이하기</button>
+      <p class="disclaimer">본 결과는 전통 명리 이론을 바탕으로 한 재미용 콘텐츠이며, 의학적·법적·재정적 판단의 근거로 사용할 수 없습니다.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var jiji = [
+    {h:'子', name:'자시', range:'23:00–00:59', trait:'새로운 기운이 움트는 시간, 조용한 결단력이 필요해요.'},
+    {h:'丑', name:'축시', range:'01:00–02:59', trait:'묵묵히 내공을 쌓는 시간, 인내심이 빛을 발해요.'},
+    {h:'寅', name:'인시', range:'03:00–04:59', trait:'생기가 솟아오르는 시간, 강한 추진력이 깃들어요.'},
+    {h:'卯', name:'묘시', range:'05:00–06:59', trait:'부드럽고 섬세한 감각이 깨어나는 시간이에요.'},
+    {h:'辰', name:'진시', range:'07:00–08:59', trait:'포부와 야망이 커지는 활기찬 시간이에요.'},
+    {h:'巳', name:'사시', range:'09:00–10:59', trait:'치밀하고 신중한 지혜가 발휘되는 시간이에요.'},
+    {h:'午', name:'오시', range:'11:00–12:59', trait:'열정과 에너지가 최고조에 달하는 시간이에요.'},
+    {h:'未', name:'미시', range:'13:00–14:59', trait:'따뜻한 감성과 여유로움이 깃든 시간이에요.'},
+    {h:'申', name:'신시', range:'15:00–16:59', trait:'재치와 순발력이 돋보이는 활동적인 시간이에요.'},
+    {h:'酉', name:'유시', range:'17:00–18:59', trait:'꼼꼼함과 계획성이 돋보이는 시간이에요.'},
+    {h:'戌', name:'술시', range:'19:00–20:59', trait:'의리와 신의를 중시하는 안정적인 시간이에요.'},
+    {h:'亥', name:'해시', range:'21:00–22:59', trait:'너그러움과 여유가 깃든 마무리의 시간이에요.'}
+  ];
+
+  var animals = [
+    {name:'쥐', keyword:'재치와 순발력'}, {name:'소', keyword:'성실과 인내'},
+    {name:'호랑이', keyword:'용맹과 추진력'}, {name:'토끼', keyword:'온화와 섬세함'},
+    {name:'용', keyword:'야망과 카리스마'}, {name:'뱀', keyword:'지혜와 직관'},
+    {name:'말', keyword:'자유와 열정'}, {name:'양', keyword:'감성과 예술성'},
+    {name:'원숭이', keyword:'재능과 유머'}, {name:'닭', keyword:'성실과 계획성'},
+    {name:'개', keyword:'충직과 정의감'}, {name:'돼지', keyword:'포용과 낙천'}
+  ];
+
+  var cheongan = ['경','신','임','계','갑','을','병','정','무','기'];
+  var jijiReading = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+
+  var elementsByMod10 = [
+    {mod:0,name:'금',hex:'#A9A18C'},{mod:1,name:'금',hex:'#A9A18C'},
+    {mod:2,name:'수',hex:'#25507A'},{mod:3,name:'수',hex:'#25507A'},
+    {mod:4,name:'목',hex:'#3C7A5C'},{mod:5,name:'목',hex:'#3C7A5C'},
+    {mod:6,name:'화',hex:'#A63B2E'},{mod:7,name:'화',hex:'#A63B2E'},
+    {mod:8,name:'토',hex:'#B8892B'},{mod:9,name:'토',hex:'#B8892B'}
+  ];
+  var elementDetail = {
+    '목':{keyword:'성장과 확장', color:'초록색', number:'3, 8', direction:'동쪽'},
+    '화':{keyword:'열정과 표현', color:'빨간색', number:'2, 7', direction:'남쪽'},
+    '토':{keyword:'안정과 신뢰', color:'황토색', number:'5, 10', direction:'중앙'},
+    '금':{keyword:'결단과 원칙', color:'흰색/은색', number:'4, 9', direction:'서쪽'},
+    '수':{keyword:'지혜와 유연함', color:'검은색/남색', number:'1, 6', direction:'북쪽'}
+  };
+
+  var templates = {
+    '종합운': {
+      '대길': ['하고자 하는 일마다 순풍이 따르는 날이에요. 망설이지 말고 적극적으로 움직여보세요.',
+               '{animal}띠 특유의 {animalKeyword} 기운이 절정에 달해, 주변의 도움을 크게 받는 시기입니다.',
+               '막혀 있던 일이 술술 풀리는 흐름, 자신감을 가져도 좋아요.'],
+      '길': ['안정적인 흐름 속에서 작은 행운들이 이어지는 시기예요.',
+             '{elementKeyword} 기운이 잘 발휘되어 노력한 만큼 좋은 결과가 따라옵니다.',
+             '새로운 인연이나 소식이 찾아올 수 있으니 주변에 관심을 기울여보세요.'],
+      '평': ['특별한 변화보다는 평소의 흐름을 유지하는 것이 좋은 시기예요.',
+             '무리한 결정보다 신중하게 지켜보는 편이 유리하겠습니다.',
+             '소소한 즐거움을 찾으며 컨디션을 관리하는 데 집중해보세요.'],
+      '주의': ['생각지 못한 변수가 생길 수 있으니 중요한 결정은 미뤄보는 것도 방법이에요.',
+               '감정이 예민해지기 쉬운 시기, 말과 행동에 신중을 기해보세요.',
+               '무리한 욕심보다 지금 가진 것을 지키는 데 집중하면 안정을 찾을 수 있어요.']
+    },
+    '애정운': {
+      '대길': ['설레는 만남이나 관계의 진전이 기대되는 시기예요.', '함께하는 사람과 깊은 신뢰가 쌓이는 때입니다.'],
+      '길': ['따뜻한 대화가 관계를 더 돈독하게 만들어 줄 거예요.', '자연스러운 인연의 접점이 생길 수 있어요.'],
+      '평': ['큰 변화는 없지만 서로를 이해하기 좋은 시기예요.', '혼자만의 시간을 즐기며 스스로를 돌보기에 좋은 때입니다.'],
+      '주의': ['사소한 오해가 커질 수 있으니 감정적인 대응은 잠시 미뤄두세요.', '상대의 말에 조금 더 귀 기울이는 것이 필요한 시기예요.']
+    },
+    '재물운': {
+      '대길': ['예상치 못한 수입이나 좋은 제안이 들어올 수 있는 시기예요.', '{elementKeyword} 기운이 재물운을 밀어주니 계약이나 거래에 긍정적인 신호가 보여요.'],
+      '길': ['계획했던 지출과 저축의 균형이 잘 맞아떨어지는 시기예요.', '알뜰한 소비로 실속을 챙길 수 있어요.'],
+      '평': ['큰 변동 없이 안정적인 흐름이 이어지니 계획대로 진행하면 됩니다.', '무리한 지출만 피한다면 평온한 재정을 유지할 수 있어요.'],
+      '주의': ['충동적인 소비나 성급한 투자는 잠시 자제하는 것이 좋겠어요.', '금전 거래에서는 약속과 서류를 꼼꼼히 확인해보세요.']
+    },
+    '건강운': {
+      '대길': ['몸과 마음의 컨디션이 최상에 가까운 시기예요.', '그동안의 관리가 빛을 발해 활력이 넘치는 때입니다.'],
+      '길': ['규칙적인 생활 습관이 컨디션을 잘 받쳐주는 시기예요.', '가벼운 산책이나 스트레칭이 활력을 더해줄 거예요.'],
+      '평': ['무리하지 않는 선에서 평소 루틴을 유지하는 것이 좋아요.', '충분한 수면과 휴식이 핵심이 되는 시기입니다.'],
+      '주의': ['피로가 쌓이기 쉬운 시기이니 일정을 조절해보세요.', '작은 컨디션 변화도 놓치지 말고 충분히 쉬어가세요.']
+    },
+    '직장·학업운': {
+      '대길': ['그동안의 노력이 성과로 이어지는 결실의 시기예요.', '새로운 도전에서 좋은 흐름을 탈 수 있는 때입니다.'],
+      '길': ['꾸준함이 빛을 발해 안정적으로 성과를 쌓는 시기예요.', '협업이 좋은 결과로 이어질 수 있어요.'],
+      '평': ['무난하게 할 일을 처리해 나가기 좋은 시기예요.', '기본기를 다지는 데 집중해보세요.'],
+      '주의': ['집중력이 흐트러지기 쉬우니 중요한 일은 오전에 처리해보세요.', '마무리 점검을 한 번 더 해보는 것이 좋겠어요.']
+    }
+  };
+  var categoryHanja = {'종합운':'總','애정운':'愛','재물운':'財','건강운':'健','직장·학업운':'業'};
+  var categoryOffset = {'종합운':0,'애정운':17,'재물운':34,'건강운':51,'직장·학업운':68};
+
+  var state = { gender:null, birthdate:null, hourIndex:null, hourUnknown:false, consent:false };
+
+  var wheel = document.getElementById('hourWheel');
+  var wheelCenter = document.getElementById('wheelCenter');
+  jiji.forEach(function(b, i){
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hour-btn';
+    btn.style.setProperty('--i', i);
+    btn.setAttribute('aria-pressed', 'false');
+    btn.setAttribute('aria-label', b.name + ' ' + b.range);
+    btn.textContent = b.h;
+    btn.addEventListener('click', function(){
+      state.hourIndex = i; state.hourUnknown = false;
+      document.querySelectorAll('.hour-btn').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      document.getElementById('unknownHour').setAttribute('aria-pressed','false');
+      btn.setAttribute('aria-pressed','true');
+      wheelCenter.innerHTML = '<span class="hanja">'+b.h+'</span><span class="name">'+b.name+'</span><span class="range">'+b.range+'</span>';
+      refreshSubmit();
+    });
+    wheel.appendChild(btn);
+  });
+
+  document.getElementById('unknownHour').addEventListener('click', function(){
+    state.hourIndex = null; state.hourUnknown = true;
+    document.querySelectorAll('.hour-btn').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+    this.setAttribute('aria-pressed','true');
+    wheelCenter.innerHTML = '<span class="hanja">?</span><span class="name">모름</span><span class="range">연월일 기준 풀이</span>';
+    refreshSubmit();
+  });
+
+  function setGender(g, btn){
+    state.gender = g;
+    document.getElementById('genderMale').setAttribute('aria-pressed', g==='남' ? 'true':'false');
+    document.getElementById('genderFemale').setAttribute('aria-pressed', g==='여' ? 'true':'false');
+    refreshSubmit();
+  }
+  document.getElementById('genderMale').addEventListener('click', function(){ setGender('남', this); });
+  document.getElementById('genderFemale').addEventListener('click', function(){ setGender('여', this); });
+
+  var birthdateInput = document.getElementById('birthdate');
+  var today = new Date();
+  birthdateInput.max = today.toISOString().slice(0,10);
+  birthdateInput.min = '1920-01-01';
+  birthdateInput.addEventListener('change', function(){
+    state.birthdate = this.value || null;
+    refreshSubmit();
+  });
+
+  document.getElementById('consent').addEventListener('change', function(){
+    state.consent = this.checked;
+    refreshSubmit();
+  });
+
+  var submitBtn = document.getElementById('submitBtn');
+  function refreshSubmit(){
+    var hourChosen = state.hourIndex !== null || state.hourUnknown;
+    submitBtn.disabled = !(state.gender && state.birthdate && hourChosen && state.consent);
+  }
+
+  function hashSeed(str){
+    var h = 0;
+    for (var i=0; i<str.length; i++){ h = ((h*31) + str.charCodeAt(i)) >>> 0; }
+    return h;
+  }
+  function gradeFor(score){
+    if (score >= 85) return '대길';
+    if (score >= 65) return '길';
+    if (score >= 40) return '평';
+    return '주의';
+  }
+  function pick(arr, seed){ return arr[seed % arr.length]; }
+
+  document.getElementById('formView').addEventListener('submit', function(e){
+    e.preventDefault();
+    if (submitBtn.disabled) return;
+    document.getElementById('formView').hidden = true;
+    document.getElementById('loadingView').hidden = false;
+    setTimeout(function(){
+      document.getElementById('loadingView').hidden = true;
+      renderResult();
+      document.getElementById('resultView').hidden = false;
+    }, 1200);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    document.getElementById('resultView').hidden = true;
+    document.getElementById('formView').hidden = false;
+    document.getElementById('card').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  function renderResult(){
+    var d = new Date(state.birthdate + 'T00:00:00');
+    var year = d.getFullYear();
+    var animalIndex = ((year - 4) % 12 + 12) % 12;
+    var mod10 = ((year % 10) + 10) % 10;
+    var gan = cheongan[mod10];
+    var jijiHanja = jiji[animalIndex].h;
+    var animal = animals[animalIndex];
+    var elementInfo = elementsByMod10[mod10];
+    var elementName = elementInfo.name;
+    var elementDetailInfo = elementDetail[elementName];
+
+    var hourInfo = state.hourUnknown ? null : jiji[state.hourIndex];
+
+    var seedSource = state.birthdate + '-' + state.gender + '-' + (state.hourUnknown ? 'X' : state.hourIndex);
+    var seed = hashSeed(seedSource);
+
+    var summaryGrid = document.getElementById('summaryGrid');
+    summaryGrid.innerHTML =
+      tile('성별', state.gender, state.gender==='남' ? '男' : '女') +
+      tile('띠', animal.name + '띠', jijiHanja) +
+      tile('생년 간지', gan + jijiReading[animalIndex] + '년', animal.keyword) +
+      tile('오행', elementName + '(五行)', elementDetailInfo.keyword) +
+      (hourInfo ? tile('태어난 시', hourInfo.name, hourInfo.range) : tile('태어난 시', '모름', '연월일 기준'));
+
+    var categories = ['종합운','애정운','재물운','건강운','직장·학업운'];
+    var totalScore = 0;
+    var catHtml = '';
+    categories.forEach(function(cat){
+      var score = (seed + categoryOffset[cat]) % 100;
+      totalScore += score;
+      var grade = gradeFor(score);
+      var arr = templates[cat][grade];
+      var text = pick(arr, seed + categoryOffset[cat]);
+      text = text.replace('{animal}', animal.name)
+                  .replace('{animalKeyword}', animal.keyword)
+                  .replace('{elementKeyword}', elementDetailInfo.keyword);
+      catHtml += '<div class="cat-block">' +
+        '<div class="cat-head"><span class="name">'+cat+' <span class="hanja">'+categoryHanja[cat]+'</span></span>' +
+        '<span class="tag '+grade+'">'+grade+'</span></div>' +
+        '<div class="score-bar"><div style="width:'+score+'%"></div></div>' +
+        '<p>'+text+'</p></div>';
+    });
+    document.getElementById('categoryList').innerHTML = catHtml;
+
+    var overallScore = Math.round(totalScore / categories.length);
+    var overallGrade = gradeFor(overallScore);
+    document.getElementById('overallGrade').textContent = overallGrade;
+    document.getElementById('overallBar').style.width = overallScore + '%';
+    document.getElementById('overallLabel').textContent = '종합 지수 ' + overallScore + ' / 100';
+
+    document.getElementById('luckyRow').innerHTML =
+      luckyTile(elementDetailInfo.color, elementInfo.hex, '행운의 색') +
+      luckyTile(elementDetailInfo.number, null, '행운의 숫자') +
+      luckyTile(elementDetailInfo.direction, null, '행운의 방향');
+  }
+
+  function tile(label, value, sub){
+    return '<div class="stat-tile"><div class="label">'+label+'</div><div class="value">'+value+'</div><div class="sub">'+sub+'</div></div>';
+  }
+  function luckyTile(value, hex, label){
+    var swatch = hex ? '<div class="swatch" style="background:'+hex+'"></div>' : '';
+    return '<div class="lucky-tile">'+swatch+'<div class="value">'+value+'</div><div class="label">'+label+'</div></div>';
+  }
+})();
+</script>

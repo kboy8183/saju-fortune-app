@@ -1,0 +1,18 @@
+{
+  "_설명": "12간지(띠) 데이터. year % 12 계산 시 index 0(쥐)의 기준연도는 1900, 1912, 1924... (index = (year - 4) % 12)",
+  "계산공식": "index = (생년 - 4) % 12  → 0:쥐, 1:소, 2:호랑이 ... 11:돼지",
+  "animals": [
+    { "index": 0, "name": "쥐",     "hanja": "子", "emoji": "🐭", "keyword": "재치와 순발력", "personality": "영리하고 눈치가 빠르며 적응력이 뛰어남. 기회를 포착하는 감각이 좋음.", "compatible": ["용", "원숭이"] },
+    { "index": 1, "name": "소",     "hanja": "丑", "emoji": "🐮", "keyword": "성실과 인내", "personality": "묵묵히 노력하는 스타일. 신뢰를 중시하며 우직하게 밀어붙이는 힘이 있음.", "compatible": ["뱀", "닭"] },
+    { "index": 2, "name": "호랑이", "hanja": "寅", "emoji": "🐯", "keyword": "용맹과 추진력", "personality": "카리스마 있고 도전적. 리더십이 강하지만 다소 성급할 수 있음.", "compatible": ["말", "개"] },
+    { "index": 3, "name": "토끼",   "hanja": "卯", "emoji": "🐰", "keyword": "온화와 섬세함", "personality": "차분하고 배려심이 많으며 사람들과 갈등을 피하려는 평화주의자.", "compatible": ["양", "돼지"] },
+    { "index": 4, "name": "용",     "hanja": "辰", "emoji": "🐲", "keyword": "야망과 카리스마", "personality": "자신감 넘치고 큰 그림을 그리는 타입. 주목받는 것을 즐김.", "compatible": ["쥐", "원숭이"] },
+    { "index": 5, "name": "뱀",     "hanja": "巳", "emoji": "🐍", "keyword": "지혜와 직관", "personality": "신중하고 통찰력이 뛰어나며 속내를 잘 드러내지 않는 전략가형.", "compatible": ["소", "닭"] },
+    { "index": 6, "name": "말",     "hanja": "午", "emoji": "🐴", "keyword": "자유와 열정", "personality": "활동적이고 사교적이며 구속받는 것을 싫어함. 에너지가 넘침.", "compatible": ["호랑이", "개"] },
+    { "index": 7, "name": "양",     "hanja": "未", "emoji": "🐑", "keyword": "감성과 예술성", "personality": "따뜻하고 공감 능력이 뛰어나며 예술적 감각이 발달함.", "compatible": ["토끼", "돼지"] },
+    { "index": 8, "name": "원숭이", "hanja": "申", "emoji": "🐵", "keyword": "재능과 유머", "personality": "머리 회전이 빠르고 재주가 많으며 상황 대처 능력이 뛰어남.", "compatible": ["쥐", "용"] },
+    { "index": 9, "name": "닭",     "hanja": "酉", "emoji": "🐔", "keyword": "성실과 계획성", "personality": "꼼꼼하고 완벽주의 성향이 있으며 자기관리에 철저함.", "compatible": ["소", "뱀"] },
+    { "index": 10, "name": "개",    "hanja": "戌", "emoji": "🐶", "keyword": "충직과 정의감", "personality": "의리를 중시하고 정직하며 주변 사람을 잘 챙기는 타입.", "compatible": ["호랑이", "말"] },
+    { "index": 11, "name": "돼지",  "hanja": "亥", "emoji": "🐷", "keyword": "포용과 낙천", "personality": "너그럽고 낙천적이며 물질적/정신적 풍요를 함께 추구함.", "compatible": ["토끼", "양"] }
+  ]
+}
